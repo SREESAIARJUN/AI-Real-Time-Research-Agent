@@ -33,7 +33,7 @@ Simply visit: [AI-Real-Time-Research-Agent.streamlit.app](https://ai-real-time-r
 
 1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/SREESAIARJUN/AI-Real-Time-Research-Agent.git
 cd ai-research-agent
 ```
 
@@ -159,7 +159,7 @@ We welcome contributions! The codebase is clean and well-documented:
 
 ## 📝 License
 
-Open source under MIT License. Feel free to use for educational and commercial projects.
+Open source under Apache License. Feel free to use for educational and commercial projects.
 
 ## 🆘 Support
 
