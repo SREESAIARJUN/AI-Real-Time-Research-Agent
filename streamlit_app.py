@@ -727,7 +727,7 @@ def setup_enhanced_agent():
     try:
         # Initialize enhanced LLM
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-pro",  # Using more capable model
+            model="gemini-2.5-flash",  # Using more capable model
             temperature=0.3,  # Lower temperature for more focused responses
             google_api_key=gemini_api_key,
             max_output_tokens=8192,
