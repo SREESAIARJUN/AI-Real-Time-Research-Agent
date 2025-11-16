@@ -261,6 +261,111 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+
+# ==========================================
+# DDGS WITH ANTI-ANOMALY DETECTION
+# ==========================================
+class SmartDuckDuckGoSearch:
+    """
+    DuckDuckGo search with anti-anomaly detection
+    Uses DDGS with proper configuration to avoid bot detection
+    """
+    def __init__(self):
+        self.name = "web_search"
+        self.description = """Search the web for current information using DuckDuckGo.
+Use this for: latest news, current events, real-time information, recent updates.
+Input should be a clear, specific search query."""
+
+    def run(self, query: str) -> str:
+        """Run DuckDuckGo search with anti-detection measures"""
+        try:
+            from duckduckgo_search import DDGS
+            import time
+            import random
+
+            # Anti-detection: Add small random delay
+            time.sleep(random.uniform(1, 3))
+
+            # Use DDGS with lite backend (less likely to trigger anomaly detection)
+            results = []
+            with DDGS() as ddgs:
+                try:
+                    # Use lite backend and conservative parameters
+                    search_results = ddgs.text(
+                        keywords=query,
+                        region='wt-wt',  # worldwide
+                        safesearch='moderate',
+                        timelimit=None,  # no time limit
+                        max_results=5,   # conservative limit
+                        backend='lite'   # lite backend avoids heavy detection
+                    )
+
+                    # Convert generator to list
+                    results = list(search_results) if search_results else []
+
+                except Exception as e:
+                    # If DDGS fails, check if it's anomaly detection
+                    error_str = str(e).lower()
+                    if 'ratelimit' in error_str or '202' in str(e) or 'anomaly' in error_str:
+                        return self._handle_anomaly_detection(query)
+                    else:
+                        raise e
+
+            # Format results
+            if not results:
+                return f"No results found for: {query}\n\nTip: Try rephrasing your query or using more specific keywords."
+
+            output = [f"🔍 **Search Results for:** {query}\n"]
+            for i, r in enumerate(results[:5], 1):
+                title = r.get('title', 'No title')
+                body = r.get('body', 'No description')
+                href = r.get('href', '')
+                output.append(f"**{i}. {title}**\n   {body}\n   🔗 {href}\n")
+
+            return "\n".join(output)
+
+        except ImportError:
+            return """⚠️ DuckDuckGo search library not installed.
+
+Install with: pip install duckduckgo-search
+
+For now, I'll answer using my training data."""
+
+        except Exception as e:
+            error_msg = str(e)
+            if 'ratelimit' in error_msg.lower() or '202' in error_msg or 'anomaly' in error_msg.lower():
+                return self._handle_anomaly_detection(query)
+            else:
+                return f"""⚠️ Search error: {error_msg[:100]}
+
+I'll answer your question using my knowledge base instead.
+
+What would you like to know about "{query}"?"""
+
+    def _handle_anomaly_detection(self, query: str) -> str:
+        """Handle DuckDuckGo anomaly detection gracefully"""
+        return f"""⚠️ **DuckDuckGo Anomaly Detection Triggered**
+
+DuckDuckGo has temporarily flagged automated searches from your IP.
+
+**Why this happens:**
+- DuckDuckGo protects against automated scraping
+- Multiple rapid searches trigger their anomaly detection
+- Not a permanent block - usually clears in 10-30 minutes
+
+**Solutions:**
+1. **Wait 10-30 minutes** - Detection usually clears automatically
+2. **Use VPN/Different Network** - Change your IP address
+3. **Get Brave Search API** (Free tier: 2000/month)
+   - Sign up: https://brave.com/search/api/
+   - Set: BRAVE_SEARCH_API_KEY=your_key
+4. **I'll answer from knowledge** - Ask me directly!
+
+**For now, let me help you with: "{query}"**
+
+I can provide information based on my training data. What specific aspect would you like to know?"""
+
 class PDFReaderTool:
     """Enhanced PDF reader tool with proper error handling"""
 
@@ -702,24 +807,21 @@ def setup_enhanced_agent():
     
     if gemini_api_key:
         st.sidebar.success("✅ API key loaded from environment")
-        st.sidebar.info(f"Using environment variable: {'GEMINI_API_KEY' if os.getenv('GEMINI_API_KEY') else 'GOOGLE_API_KEY'}")
+        st.sidebar.info("Using environment variable OPENAI_API_KEY")
     else:
         st.sidebar.warning("⚠️ No environment API key found")
-        openai_api_key = st.sidebar.text_input(
+        gemini_api_key = st.sidebar.text_input(
             "Google Gemini API Key", 
             type="password",
-            help="Enter your Gemini API key from aistudio.google.com",
+            help="Enter your OpenAI API key from platform.openai.com",
             placeholder="AI..."
         )
 
     if not gemini_api_key:
         st.sidebar.error("⚠️ API key required to continue")
         st.sidebar.markdown("""
-        **Get your free Gemini API key:**
-        👉 [Google AI Studio](https://aistudio.google.com/app/apikey)
-
         **Two ways to provide API key:**
-        1. Set environment variable: `GEMINI_API_KEY=your_key` or `GOOGLE_API_KEY=your_key`
+        1. Set environment variable: `OPENAI_API_KEY=your_key`
         2. Enter manually in the field above
         """)
         return None
@@ -727,7 +829,7 @@ def setup_enhanced_agent():
     try:
         # Initialize enhanced LLM
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",  # Using more capable model
+            model="gemini-2.5-pro",  # Using more capable model
             temperature=0.3,  # Lower temperature for more focused responses
             google_api_key=gemini_api_key,
             max_output_tokens=8192,
