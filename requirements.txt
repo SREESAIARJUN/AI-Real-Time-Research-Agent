@@ -25,3 +25,4 @@ duckduckgo-search>=3.9.0
 
 # Utilities
 python-dotenv>=1.0.0
+ddgs
