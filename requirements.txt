@@ -1,23 +1,11 @@
-# LangChain Core Packages - September 2024 Compatible Versions
-streamlit==1.38.0
+streamlit>=1.28.0
 langchain==0.2.16
 langchain-openai==0.1.23
 langchain-community==0.2.16
-langchain-core==0.2.38
-
-# Search and Tools
-duckduckgo-search==6.2.13
-
-# Document Processing
-PyPDF2==3.0.1
-
-# Data Science and Visualization
-matplotlib==3.9.2
-pandas==2.2.2
-numpy==1.26.4
-
-# AI/ML
-openai==1.45.0
-
-# Image Processing
-Pillow==10.4.0
+duckduckgo-search>=3.9.0
+PyPDF2>=3.0.1
+matplotlib>=3.7.0
+pandas>=2.0.0
+openai>=1.0.0
+Pillow>=10.0.0
+numpy>=1.24.0
