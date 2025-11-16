@@ -8,10 +8,9 @@ import re
 import io
 
 # Core LangChain imports
-from langchain.agents import create_react_agent, AgentExecutor
+from langchain.agents import create_openai_functions_agent, AgentExecutor
 from langchain.memory import ConversationBufferMemory
-from langchain_community.tools import DuckDuckGoSearchResults
-from langchain.tools import Tool
+from langchain.tools import DuckDuckGoSearchResults, Tool
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
@@ -604,9 +603,7 @@ Automatically search when queries involve:
 - Suggest related research directions
 - Adapt depth and complexity to user needs
 
-Remember: You are not just answering questions—you are facilitating discovery, enabling deeper understanding, and empowering informed decision-making through intelligent research assistance.)
-                Available tools: {tools}
-        Tool names: {tool_names}""",
+Remember: You are not just answering questions—you are facilitating discovery, enabling deeper understanding, and empowering informed decision-making through intelligent research assistance."""),
 
         MessagesPlaceholder(variable_name="chat_history"),
 
@@ -771,8 +768,8 @@ def setup_enhanced_agent():
         # Create advanced prompt
         prompt = create_advanced_prompt()
 
-        # Create enhanced agent using create_react_agent
-        agent = create_react_agent(llm, tools, prompt)
+        # Create enhanced agent
+        agent = create_openai_functions_agent(llm, tools, prompt)
 
         # Create agent executor with better error handling
         agent_executor = AgentExecutor(
