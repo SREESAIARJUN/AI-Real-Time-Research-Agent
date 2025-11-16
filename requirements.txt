@@ -1,28 +1,32 @@
-# Gemini 2.5 Pro Migration Requirements
-# Install with: pip install -r requirements.txt
+# Core LangChain (0.1.0+ for stable API)
+langchain>=0.1.0,<0.3.0
+langchain-core>=0.1.0,<0.3.0
+langchain-community>=0.0.28,<0.3.0
 
-# Core LangChain
-langchain>=0.1.0
-langchain-core>=0.1.0
-langchain-community>=0.0.28
-
-# Google Gemini Integration
-langchain-google-genai>=1.0.0
-google-generativeai>=0.3.0
+# ✅ FIXED: Google Gemini Integration
+# Latest stable versions compatible with LangChain
+langchain-google-genai>=1.0.0,<2.0.0
+google-generativeai>=0.7.0,<1.0.0
 
 # Streamlit for Web Interface
-streamlit>=1.28.0
+streamlit>=1.28.0,<2.0.0
 
 # Document Processing
-PyPDF2>=3.0.0
+PyPDF2>=3.0.0,<4.0.0
 
 # Data Visualization
-matplotlib>=3.7.0
-pandas>=2.0.0
+matplotlib>=3.7.0,<4.0.0
+pandas>=2.0.0,<3.0.0
 
 # Search Capabilities
-duckduckgo-search>=3.9.0
+duckduckgo-search>=3.9.0,<7.0.0
 
 # Utilities
-python-dotenv>=1.0.0
-ddgs
+python-dotenv>=1.0.0,<2.0.0
+
+# ================================================
+# OPTIONAL: Development & Testing
+# ================================================
+# pytest>=7.0.0  # For testing
+# black>=23.0.0  # Code formatting
+# mypy>=1.0.0    # Type checking
