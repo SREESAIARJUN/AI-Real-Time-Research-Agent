@@ -702,10 +702,10 @@ def setup_enhanced_agent():
     
     if gemini_api_key:
         st.sidebar.success("✅ API key loaded from environment")
-        st.sidebar.info("Using environment variable: GEMINI_API_KEY or GOOGLE_API_KEY")
+        st.sidebar.info(f"Using environment variable: {'GEMINI_API_KEY' if os.getenv('GEMINI_API_KEY') else 'GOOGLE_API_KEY'}")
     else:
         st.sidebar.warning("⚠️ No environment API key found")
-        gemini_api_key = st.sidebar.text_input(
+        openai_api_key = st.sidebar.text_input(
             "Google Gemini API Key", 
             type="password",
             help="Enter your Gemini API key from aistudio.google.com",
@@ -726,11 +726,12 @@ def setup_enhanced_agent():
 
     try:
         # Initialize enhanced LLM
-        llm = ChatOpenAI(
-            model="gpt-4o-mini",  # Using more capable model
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-pro",  # Using more capable model
             temperature=0.3,  # Lower temperature for more focused responses
-            api_key=gemini_api_key,
-            max_tokens=5000
+            google_api_key=gemini_api_key,
+            max_output_tokens=8192,
+            convert_system_message_to_human=True
         )
 
         # Initialize enhanced tools
@@ -788,15 +789,7 @@ def setup_enhanced_agent():
         return agent_executor
 
     except Exception as e:
-        error_msg = str(e)
-        if "API key" in error_msg or "authentication" in error_msg.lower():
-            st.sidebar.error("❌ Invalid API key. Please check your Gemini API key.")
-        elif "quota" in error_msg.lower() or "rate" in error_msg.lower():
-            st.sidebar.error("❌ Rate limit exceeded. Please wait and try again.")
-        elif "500" in error_msg:
-            st.sidebar.error("❌ Gemini server error. Please retry in a few seconds.")
-        else:
-            st.sidebar.error(f"❌ Setup failed: {error_msg}")
+        st.sidebar.error(f"❌ Setup failed: {str(e)}")
         return None
 
 def display_message(message: Dict[str, str], is_user: bool = True):
@@ -1006,42 +999,14 @@ def main():
                     """, unsafe_allow_html=True)
 
             except Exception as e:
-                error_msg = str(e)
-
-                # Enhanced error handling for Gemini-specific issues
-                if "quota" in error_msg.lower() or "rate" in error_msg.lower():
-                    st.error("""❌ Rate limit exceeded. 
-
-**Solutions:**
-- Wait a few minutes and try again
-- Check your Gemini API quota at console.cloud.google.com
-- Consider upgrading to a paid tier for higher limits""")
-
-                elif "500" in error_msg:
-                    st.warning("""⚠️ Gemini server error (500).
-
-**Solutions:**
-- This is a temporary Google server issue
-- Try again in a few seconds
-- The error usually resolves automatically""")
-
-                elif "authentication" in error_msg.lower() or "api key" in error_msg.lower():
-                    st.error("""❌ Authentication error.
-
-**Solutions:**
-- Verify your API key is correct
-- Get a new key at https://aistudio.google.com/app/apikey
-- Check that the key is active and not expired""")
-
-                else:
-                    st.error(f"❌ Error: {error_msg}")
-                    st.markdown("""
-**🛠️ Troubleshooting:**
-- Verify your Gemini API key is valid
-- Check your internet connection
-- Try rephrasing your query
-- For PDF analysis, ensure the file isn't corrupted
-                    """)
+                st.error(f"❌ Error: {str(e)}")
+                st.markdown("""
+                **🛠️ Troubleshooting:**
+                - Verify your OpenAI API key is valid
+                - Check your internet connection
+                - Try rephrasing your query
+                - For PDF analysis, ensure the file isn't corrupted
+                """)
 
 if __name__ == "__main__":
     main()
